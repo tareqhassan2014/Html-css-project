@@ -1,11 +1,29 @@
 /* -------------------
- Testimonial slider
----------------------- */
-
+    All variables
+    ---------------------- */
 const carouselOne = document.getElementById("carouselOne"),
-    testimonialImage = document.querySelector(".js-testimonial-img");
+    colorStyle = document.querySelector(".js-color-style"),
+    glassStyle = document.querySelector(".js-glass-style"),
+    darkModeCheckbox = document.querySelector(".js-dark-mode"),
+    styleSwitcher = document.querySelector(".js-style-switcher"),
+    glassEffectCheckbox = document.querySelector(".js-glass-effect"),
+    themeColorContainer = document.querySelector(".js-theme-colors"),
+    testimonialImage = document.querySelector(".js-testimonial-img"),
+    coursePreviewModal = document.querySelector(".js-course-preview-modal"),
+    styleSwitcherToggler = document.querySelector(".js-style-switcher-toggler");
+
+let path = colorStyle.getAttribute("href").split("/");
+path = path.slice(0, path.length - 1);
+
+/* -------------------
+    Main Function 
+    ---------------------- */
 
 (function () {
+    /* -------------------
+    Testimonial slider 
+    ---------------------- */
+
     carouselOne &&
         carouselOne.addEventListener("slide.bs.carousel", function () {
             const activeItem = this.querySelector(".active");
@@ -13,16 +31,10 @@ const carouselOne = document.getElementById("carouselOne"),
                 "data-js-animation-img"
             );
         });
-})();
 
-/* -------------------
-course preview video
----------------------- */
-
-(function () {
-    const coursePreviewModal = document.querySelector(
-        ".js-course-preview-modal"
-    );
+    /* -------------------
+    course preview Modal video 
+    ---------------------- */
 
     coursePreviewModal &&
         coursePreviewModal.addEventListener("show.bs.modal", function () {
@@ -34,36 +46,20 @@ course preview video
         coursePreviewModal.addEventListener("hide.bs.modal", function () {
             this.querySelector(".js-course-preview-video").pause();
         });
-})();
 
-/* -------------------
-style switcher
----------------------- */
-
-(function () {
-    const styleSwitcher = document.querySelector(".js-style-switcher"),
-        styleSwitcherToggler = document.querySelector(
-            ".js-style-switcher-toggler"
-        );
-
+    /* -------------------
+    style switcher
+    ---------------------- */
     styleSwitcherToggler.addEventListener("click", function () {
         styleSwitcher.classList.toggle("open");
         this.querySelector("i").classList.toggle("fa-times");
         this.querySelector("i").classList.toggle("fa-cog");
     });
-})();
 
-/* -------------------
-theme colors
----------------------- */
+    /* -------------------
+    theme colors
+    ---------------------- */
 
-const colorStyle = document.querySelector(".js-color-style"),
-    themeColorContainer = document.querySelector(".js-theme-colors");
-
-let path = colorStyle.getAttribute("href").split("/");
-path = path.slice(0, path.length - 1);
-
-(function () {
     themeColorContainer.addEventListener("click", ({ target }) => {
         if (target.classList.contains("js-theme-color-item")) {
             localStorage.setItem(
@@ -77,36 +73,31 @@ path = path.slice(0, path.length - 1);
     if (localStorage.getItem("color") !== null) {
         setColor();
     }
-})();
 
-/* sec color */
+    /* sec color */
 
-function setColor() {
-    const localStorageColor = localStorage.getItem("color");
+    function setColor() {
+        const localStorageColor = localStorage.getItem("color");
 
-    console.log("call setColor");
+        colorStyle.setAttribute(
+            "href",
+            `${path.join("/")}/${localStorageColor}.css`
+        );
 
-    colorStyle.setAttribute(
-        "href",
-        `${path.join("/")}/${localStorageColor}.css`
-    );
+        if (document.querySelector(".js-theme-color-item.active")) {
+            document
+                .querySelector(".js-theme-color-item.active")
+                .classList.remove("active");
+        }
 
-    if (document.querySelector(".js-theme-color-item.active")) {
         document
-            .querySelector(".js-theme-color-item.active")
-            .classList.remove("active");
+            .querySelector(`[data-js-theme-color=${localStorageColor}]`)
+            .classList.add("active");
     }
 
-    document
-        .querySelector(`[data-js-theme-color=${localStorageColor}]`)
-        .classList.add("active");
-}
-
-/* Theme lite and dark mode */
-
-const darkModeCheckbox = document.querySelector(".js-dark-mode");
-
-(function () {
+    /* -------------------
+    Theme lite and dark mode
+    ---------------------- */
     darkModeCheckbox.addEventListener("click", function () {
         this.checked
             ? localStorage.setItem("theme-dark", "true")
@@ -130,4 +121,29 @@ const darkModeCheckbox = document.querySelector(".js-dark-mode");
     const themeDark = localStorage.getItem("theme-dark");
 
     themeDark && themeMode();
+
+    /* -------------------
+    Theme glass effect
+    ---------------------- */
+
+    glassEffectCheckbox.addEventListener("click", function () {
+        this.checked
+            ? localStorage.setItem("glass-effect", "true")
+            : localStorage.setItem("glass-effect", "false");
+
+        setGlassEffect();
+    });
+
+    const setGlassEffect = () => {
+        const glassEffect = localStorage.getItem("glass-effect");
+
+        glassEffect === "true"
+            ? glassStyle.removeAttribute("disabled")
+            : (glassStyle.disabled = true);
+    };
+
+    localStorage.getItem("glass-effect") && setGlassEffect();
+
+    if (!glassStyle.hasAttribute("disabled"))
+        glassEffectCheckbox.checked = true;
 })();
